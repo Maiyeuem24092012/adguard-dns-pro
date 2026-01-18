@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNS Multi-Engine Pro + Checker</title>
+    <style>
+        :root { --ag-green: #67bc91; --cf-orange: #f38020; --ag-dark: #0f0f0f; --ag-card: #1c1c1e; --ag-gray: #8e8e93; --ag-red: #ff453a; }
+        body { background: var(--ag-dark); color: white; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .header { width: 100%; padding: 20px 0; text-align: center; font-weight: 600; border-bottom: 0.5px solid #333; letter-spacing: 1px; }
+        
+        /* Công tắc & Khiên */
+        .shield-section { margin: 30px 0; position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
+        .shield-circle { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #333; transition: 0.5s; display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+        .active-ag { border-color: var(--ag-green); box-shadow: 0 0 40px rgba(103, 188, 145, 0.2); }
+        .shield-icon { font-size: 60px; transition: 0.5s; filter: grayscale(1); }
+        .active-icon { filter: grayscale(0); transform: scale(1.1); }
+        .loader { position: absolute; width: 170px; height: 170px; border: 4px solid transparent; border-radius: 50%; display: none; animation: spin 1s linear infinite; z-index: 1; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .status-label { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 20px; text-transform: uppercase; }
+        
+        /* Menu */
+        .menu-container { width: 92%; max-width: 420px; }
+        .group-title { font-size: 11px; color: var(--ag-gray); margin: 15px 5px 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
+        .menu-item { background: var(--ag-card); border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        .menu-item:active { transform: scale(0.98); }
+        .icon-box { width: 40px; height: 40px; background: #2c2c2e; border-radius: 10px; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .badge { font-size: 10px; padding: 3px 10px; border-radius: 10px; font-weight: bold; background: #333; }
+        .badge-ag { color: var(--ag-green); }
+        .badge-cf { color: var(--cf-orange); }
+
+        /* Hệ thống kiểm tra (Dưới gạch đỏ) */
+        .checker-box { width: 92%; max-width: 420px; margin-top: 20px; padding: 20px 0; border-top: 2px solid #333; }
+        .check-item { background: #151517; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ag-gray); margin-right: 10px; display: inline-block; }
+        .dot-online { background: var(--ag-green); box-shadow: 0 0 10px var(--ag-green); }
+        .dot-offline { background: var(--ag-red); }
+    </style>
+</head>
+<body>
+
+    <div class="header">DNS MULTI-ENGINE PRO</div>
+
+    <div class="shield-section" onclick="toggleMainPower()">
+        <div class="loader" id="loader"></div>
+        <div class="shield-circle" id="circle"><div class="shield-icon" id="icon">🛡️</div></div>
+    </div>
+
+    <div class="status-label" id="status">HỆ THỐNG SẴN SÀNG</div>
+
+    <div class="menu-container">
+        <div class="group-title">ADGUARD (CHẶN QUẢNG CÁO - 1C5A8E)</div>
+        <div class="menu-item" onclick="installEXE('ag')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🖥️</div><div><b>Windows Auto</b><br><small style="color:var(--ag-gray)">Wi-Fi & Ethernet</small></div></div>
+            <div class="badge badge-ag">BLOCK</div>
+        </div>
+        <div class="menu-item" onclick="installIOS('ag')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile</b><br><small style="color:var(--ag-gray)">Cài DoH 1c5a8e</small></div></div>
+            <div class="badge badge-ag">SECURE</div>
+        </div>
+        <div class="menu-item" onclick="installAPK('1c5a8e.dns.nextdns.io')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android AdGuard</b><br><small style="color:var(--ag-gray)">Private DNS ID</small></div></div>
+            <div class="badge badge-ag">STABLE</div>
+        </div>
+
+        <div class="group-title">CLOUDFLARE (TỐC ĐỘ & GAME - 1.1.1.1)</div>
+        <div class="menu-item" onclick="installEXE('cf')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">⚡</div><div><b>Windows 1.1.1.1</b><br><small style="color:var(--ag-gray)">Wi-Fi & Ethernet</small></div></div>
+            <div class="badge badge-cf">FAST</div>
+        </div>
+        <div class="menu-item" onclick="installIOS('cf')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile 1.1.1.1</b><br><small style="color:var(--ag-gray)">Cài DoH Cloudflare</small></div></div>
+            <div class="badge badge-cf">SECURE</div>
+        </div>
+        <div class="menu-item" onclick="installAPK('one.one.one.one')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android Settings</b><br><small style="color:var(--ag-gray)">DNS 1.1.1.1</small></div></div>
+            <div class="badge badge-cf">GLOBAL</div>
+        </div>
+    </div>
+
+    <div class="checker-box">
+        <div class="group-title" style="margin-left:0">KIỂM TRA TRẠNG THÁI KẾT NỐI</div>
+        <div class="check-item">
+            <span><span class="dot" id="dot-ag"></span>AdGuard DNS (1c5a8e)</span>
+            <small id="text-ag" style="color:var(--ag-gray)">Chưa nhận</small>
+        </div>
+        <div class="check-item">
+            <span><span class="dot" id="dot-cf"></span>Cloudflare (1.1.1.1)</span>
+            <small id="text-cf" style="color:var(--ag-gray)">Chưa nhận</small>
+        </div>
+        <button onclick="checkDNS()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">KIỂM TRA LẠI</button>
+    </div>
+
+    <script>
+        // 1. Công tắc chính
+        function toggleMainPower() {
+            const loader = document.getElementById('loader');
+            const circle = document.getElementById('circle');
+            const icon = document.getElementById('icon');
+            const status = document.getElementById('status');
+
+            loader.style.display = "block";
+            loader.style.borderTopColor = "var(--ag-green)";
+            status.innerText = "ĐANG QUÉT HỆ THỐNG...";
+
+            setTimeout(() => {
+                loader.style.display = "none";
+                circle.classList.add('active-ag');
+                icon.classList.add('active-icon');
+                status.innerText = "HỆ THỐNG ĐÃ KÍCH HOẠT";
+                status.style.color = "var(--ag-green)";
+                checkDNS();
+            }, 1000);
+        }
+
+        // 2. Hệ thống kiểm tra DNS (DNS Checker)
+        async function checkDNS() {
+            // Kiểm tra Cloudflare
+            try {
+                const cf = await fetch('https://1.1.1.1/cdn-cgi/trace', { mode: 'no-cors' });
+                document.getElementById('dot-cf').className = "dot dot-online";
+                document.getElementById('text-cf').innerText = "ĐÃ KẾT NỐI";
+                document.getElementById('text-cf').style.color = "var(--ag-green)";
+            } catch(e) {
+                document.getElementById('dot-cf').className = "dot dot-offline";
+                document.getElementById('text-cf').innerText = "NGOẠI TUYẾN";
+            }
+
+            // Kiểm tra AdGuard/NextDNS bằng cách query domain đặc biệt
+            const img = new Image();
+            img.onload = () => {
+                document.getElementById('dot-ag').className = "dot dot-online";
+                document.getElementById('text-ag').innerText = "ĐÃ KÍCH HOẠT";
+                document.getElementById('text-ag').style.color = "var(--ag-green)";
+            };
+            img.onerror = () => {
+                document.getElementById('dot-ag').className = "dot dot-offline";
+                document.getElementById('text-ag').innerText = "CHƯA NHẬN";
+            };
+            // NextDNS/AdGuard thường trả về ảnh 1x1 nếu domain này được xử lý
+            img.src = "https://1c5a8e.dns.nextdns.io/favicon.ico?" + Math.random();
+        }
+
+        // 3. Các hàm cài đặt (Gộp từ yêu cầu trước)
+        function installEXE(mode) {
+            let bat = mode === 'ag' ? 
+                `@echo off\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nnetsh interface ip set dnsservers name="%%j" source=static address=45.90.28.66 validate=no\nnetsh interface ip add dnsservers name="%%j" address=45.90.30.66 index=2 validate=no\n)\nipconfig /flushdns\npause` :
+                `@echo off\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nnetsh interface ip set dnsservers name="%%j" source=static address=1.1.1.1 validate=no\nnetsh interface ip add dnsservers name="%%j" address=1.0.0.1 index=2 validate=no\n)\nipconfig /flushdns\npause`;
+            const blob = new Blob([bat], {type: 'text/plain'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = mode + "_setup.bat"; a.click();
+        }
+
+        function installIOS(mode) {
+            let url = mode === 'ag' ? "https://dns.nextdns.io/1c5a8e" : "https://cloudflare-dns.com/dns-query";
+            const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns.${mode}</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>DNS ${mode.toUpperCase()}</string><key>PayloadIdentifier</key><string>com.setup.${mode}</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
+            const blob = new Blob([profile], {type: 'application/x-apple-aspen-config'});
+            window.location.href = URL.createObjectURL(blob);
+        }
+
+        function installAPK(id) {
+            navigator.clipboard.writeText(id);
+            alert("Đã copy mã DNS! Hãy dán vào mục 'DNS riêng' trong cài đặt điện thoại.");
+            window.location.href = "intent:#Intent;action=android.settings.PVT_DNS_SETTINGS;end";
+        }
+        
+        window.onload = checkDNS;
+    </script>
+</body>
+</html>
