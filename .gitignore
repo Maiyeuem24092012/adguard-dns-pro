@@ -1,0 +1,17 @@
+# Các tệp hệ điều hành
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Các tệp tạm của trình soạn thảo (VS Code, Sublime, v.v.)
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Các tệp log
+*.log
+
+# Nếu bạn có dùng các gói thư viện sau này
+node_modules/
+dist/
