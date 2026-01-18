@@ -31,7 +31,7 @@
         .badge-cf { color: var(--cf-orange); }
 
         /* Hệ thống kiểm tra (Dưới gạch đỏ) */
-        .checker-box { width: 92%; max-width: 420px; margin-top: 20px; padding: 20px 0; border-top: 2px solid #333; }
+        .checker-box { width: 92%; max-width: 420px; margin-top: 20px; padding: 20px 0; border-top: 2px solid #ff453a; }
         .check-item { background: #151517; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ag-gray); margin-right: 10px; display: inline-block; }
         .dot-online { background: var(--ag-green); box-shadow: 0 0 10px var(--ag-green); }
@@ -60,7 +60,7 @@
             <div class="badge badge-ag">SECURE</div>
         </div>
         <div class="menu-item" onclick="installAPK('1c5a8e.dns.nextdns.io')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android AdGuard</b><br><small style="color:var(--ag-gray)">Private DNS ID</small></div></div>
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android AdGuard</b><br><small style="color:var(--ag-gray)">Sử dụng DNS ID</small></div></div>
             <div class="badge badge-ag">STABLE</div>
         </div>
 
@@ -80,16 +80,16 @@
     </div>
 
     <div class="checker-box">
-        <div class="group-title" style="margin-left:0">KIỂM TRA TRẠNG THÁI KẾT NỐI</div>
+        <div class="group-title" style="margin-left:0; color:#ff453a;">KIỂM TRA TRẠNG THÁI KẾT NỐI</div>
         <div class="check-item">
             <span><span class="dot" id="dot-ag"></span>AdGuard DNS (1c5a8e)</span>
-            <small id="text-ag" style="color:var(--ag-gray)">Chưa nhận</small>
+            <small id="text-ag" style="color:var(--ag-gray)">Đang quét...</small>
         </div>
         <div class="check-item">
             <span><span class="dot" id="dot-cf"></span>Cloudflare (1.1.1.1)</span>
-            <small id="text-cf" style="color:var(--ag-gray)">Chưa nhận</small>
+            <small id="text-cf" style="color:var(--ag-gray)">Đang quét...</small>
         </div>
-        <button onclick="checkDNS()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">KIỂM TRA LẠI</button>
+        <button onclick="checkDNS()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">LÀM MỚI TRẠNG THÁI</button>
     </div>
 
     <script>
@@ -102,7 +102,7 @@
 
             loader.style.display = "block";
             loader.style.borderTopColor = "var(--ag-green)";
-            status.innerText = "ĐANG QUÉT HỆ THỐNG...";
+            status.innerText = "ĐANG TỐI ƯU MẠNG...";
 
             setTimeout(() => {
                 loader.style.display = "none";
@@ -114,11 +114,11 @@
             }, 1000);
         }
 
-        // 2. Hệ thống kiểm tra DNS (DNS Checker)
+        // 2. Hệ thống kiểm tra DNS thực tế
         async function checkDNS() {
-            // Kiểm tra Cloudflare
+            // Kiểm tra Cloudflare qua API công khai
             try {
-                const cf = await fetch('https://1.1.1.1/cdn-cgi/trace', { mode: 'no-cors' });
+                const cf = await fetch('https://1.1.1.1/cdn-cgi/trace', { mode: 'no-cors', cache: 'no-store' });
                 document.getElementById('dot-cf').className = "dot dot-online";
                 document.getElementById('text-cf').innerText = "ĐÃ KẾT NỐI";
                 document.getElementById('text-cf').style.color = "var(--ag-green)";
@@ -127,40 +127,45 @@
                 document.getElementById('text-cf').innerText = "NGOẠI TUYẾN";
             }
 
-            // Kiểm tra AdGuard/NextDNS bằng cách query domain đặc biệt
+            // Kiểm tra AdGuard/NextDNS bằng cách thử truy cập endpoint DNS
             const img = new Image();
             img.onload = () => {
                 document.getElementById('dot-ag').className = "dot dot-online";
-                document.getElementById('text-ag').innerText = "ĐÃ KÍCH HOẠT";
+                document.getElementById('text-ag').innerText = "ĐÃ HOẠT ĐỘNG";
                 document.getElementById('text-ag').style.color = "var(--ag-green)";
             };
             img.onerror = () => {
                 document.getElementById('dot-ag').className = "dot dot-offline";
                 document.getElementById('text-ag').innerText = "CHƯA NHẬN";
+                document.getElementById('text-ag').style.color = "var(--ag-red)";
             };
-            // NextDNS/AdGuard thường trả về ảnh 1x1 nếu domain này được xử lý
-            img.src = "https://1c5a8e.dns.nextdns.io/favicon.ico?" + Math.random();
+            img.src = "https://1c5a8e.dns.nextdns.io/favicon.ico?" + Date.now();
         }
 
-        // 3. Các hàm cài đặt (Gộp từ yêu cầu trước)
+        // 3. Hàm cài đặt Windows Auto-Scan (Wi-Fi & Ethernet)
         function installEXE(mode) {
-            let bat = mode === 'ag' ? 
-                `@echo off\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nnetsh interface ip set dnsservers name="%%j" source=static address=45.90.28.66 validate=no\nnetsh interface ip add dnsservers name="%%j" address=45.90.30.66 index=2 validate=no\n)\nipconfig /flushdns\npause` :
-                `@echo off\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nnetsh interface ip set dnsservers name="%%j" source=static address=1.1.1.1 validate=no\nnetsh interface ip add dnsservers name="%%j" address=1.0.0.1 index=2 validate=no\n)\nipconfig /flushdns\npause`;
-            const blob = new Blob([bat], {type: 'text/plain'});
+            let batText = "";
+            if(mode === 'ag') {
+                batText = `@echo off\ntitle AdGuard Setup\nsetlocal enabledelayedexpansion\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nset "IFNAME=%%j"\nnetsh interface ip set dnsservers name="!IFNAME!" source=static address=45.90.28.66 validate=no\nnetsh interface ip add dnsservers name="!IFNAME!" address=45.90.30.66 index=2 validate=no\nnetsh interface ipv6 set dnsservers name="!IFNAME!" source=static address=2a07:a8c0::1c:5a8e validate=no\n)\nipconfig /flushdns\necho [OK] Da kich hoat AdGuard cho !IFNAME!\npause`;
+            } else {
+                batText = `@echo off\ntitle Cloudflare Setup\nsetlocal enabledelayedexpansion\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nset "IFNAME=%%j"\nnetsh interface ip set dnsservers name="!IFNAME!" source=static address=1.1.1.1 validate=no\nnetsh interface ip add dnsservers name="!IFNAME!" address=1.0.0.1 index=2 validate=no\nnetsh interface ipv6 set dnsservers name="!IFNAME!" source=static address=2606:4700:4700::1111 validate=no\n)\nipconfig /flushdns\necho [OK] Da kich hoat Cloudflare cho !IFNAME!\npause`;
+            }
+            const blob = new Blob([batText], {type: 'text/plain'});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = mode + "_setup.bat"; a.click();
         }
 
+        // 4. Hàm cài đặt iOS Profile (DoH)
         function installIOS(mode) {
             let url = mode === 'ag' ? "https://dns.nextdns.io/1c5a8e" : "https://cloudflare-dns.com/dns-query";
-            const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns.${mode}</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>DNS ${mode.toUpperCase()}</string><key>PayloadIdentifier</key><string>com.setup.${mode}</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
+            const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns.${mode}</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>DNS ${mode.toUpperCase()} Pro</string><key>PayloadIdentifier</key><string>com.setup.${mode}</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
             const blob = new Blob([profile], {type: 'application/x-apple-aspen-config'});
             window.location.href = URL.createObjectURL(blob);
         }
 
+        // 5. Hàm cài đặt Android (Copy & Mở Settings)
         function installAPK(id) {
-            navigator.clipboard.writeText(id);
-            alert("Đã copy mã DNS! Hãy dán vào mục 'DNS riêng' trong cài đặt điện thoại.");
+            const el = document.createElement('textarea'); el.value = id; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            alert("Đã copy mã DNS: " + id + "\n\nNhấn OK để mở cài đặt DNS riêng.");
             window.location.href = "intent:#Intent;action=android.settings.PVT_DNS_SETTINGS;end";
         }
         
