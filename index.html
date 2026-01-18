@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNS Smart Engine Pro - Full Multi-Platform</title>
+    <title>DNS Smart Engine Pro - Ultimate Edition</title>
     <style>
         :root { --ag-green: #67bc91; --cf-orange: #f38020; --ag-dark: #0f0f0f; --ag-card: #1c1c1e; --ag-gray: #8e8e93; --ag-red: #ff453a; }
         body { background: var(--ag-dark); color: white; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: 0.5s; }
         .header { width: 100%; padding: 20px 0; text-align: center; font-weight: 600; border-bottom: 0.5px solid #333; letter-spacing: 1px; }
         
-        /* Công tắc Khiên thông minh 2 chế độ */
+        /* Công tắc Khiên thông minh */
         .shield-section { margin: 30px 0; position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
         .shield-circle { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #333; transition: 0.5s; display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
         .active-circle { border-color: var(--ag-green); box-shadow: 0 0 40px rgba(103, 188, 145, 0.4); }
@@ -21,7 +21,7 @@
         .status-label { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 20px; text-transform: uppercase; transition: 0.3s; }
         .status-on { color: var(--ag-green) !important; }
 
-        /* Menu Container */
+        /* Danh mục Menu */
         .menu-container { width: 92%; max-width: 420px; }
         .group-title { font-size: 11px; color: var(--ag-gray); margin: 15px 5px 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
         .menu-item { background: var(--ag-card); border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
@@ -48,17 +48,17 @@
     <div class="status-label" id="status">CHẾ ĐỘ CHỜ</div>
 
     <div class="menu-container">
-        <div class="group-title">ADGUARD (CHẶN QUẢNG CÁO - 1C5A8E)</div>
+        <div class="group-title">ADGUARD (CHẶN QUẢNG CÁO - CC1A65)</div>
         <div class="menu-item" onclick="downloadWindows('AdGuard')">
             <div style="display:flex; align-items:center;"><div class="icon-box">🖥️</div><div><b>Windows Auto Fix</b><br><small style="color:var(--ag-gray)">adguard-remove-ads.bat</small></div></div>
             <div class="badge" style="color:var(--ag-green)">BLOCK</div>
         </div>
-        <div class="menu-item" onclick="installIOS('AdGuard')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile</b><br><small style="color:var(--ag-gray)">Profile DoH 1c5a8e</small></div></div>
+        <div class="menu-item" onclick="installProfile('AdGuard')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile</b><br><small style="color:var(--ag-gray)">Tải cấu hình .mobileconfig</small></div></div>
             <div class="badge" style="color:var(--ag-green)">SECURE</div>
         </div>
-        <div class="menu-item" onclick="copyAndroid('1c5a8e.dns.nextdns.io')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android AdGuard</b><br><small style="color:var(--ag-gray)">Sử dụng DNS riêng hệ thống</small></div></div>
+        <div class="menu-item" onclick="copyAndroid('cc1a659b-a5b6-4fb1-b829-4ee1969f1c99.dns.nextdns.io')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android AdGuard</b><br><small style="color:var(--ag-gray)">Private DNS ID: cc1a65</small></div></div>
             <div class="badge" style="color:var(--ag-green)">STABLE</div>
         </div>
 
@@ -67,12 +67,12 @@
             <div style="display:flex; align-items:center;"><div class="icon-box">⚡</div><div><b>Windows 1.1.1.1</b><br><small style="color:var(--ag-gray)">cloudflare-fast.bat</small></div></div>
             <div class="badge" style="color:var(--cf-orange)">FAST</div>
         </div>
-        <div class="menu-item" onclick="installIOS('Cloudflare')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile 1.1.1.1</b><br><small style="color:var(--ag-gray)">Profile Cloudflare DoH</small></div></div>
+        <div class="menu-item" onclick="installProfile('Cloudflare')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile 1.1.1.1</b><br><small style="color:var(--ag-gray)">Tải cấu hình Cloudflare</small></div></div>
             <div class="badge" style="color:var(--cf-orange)">SECURE</div>
         </div>
         <div class="menu-item" onclick="copyAndroid('one.one.one.one')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android Settings</b><br><small style="color:var(--ag-gray)">DNS 1.1.1.1</small></div></div>
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android Settings</b><br><small style="color:var(--ag-gray)">Cài đặt DNS hệ thống</small></div></div>
             <div class="badge" style="color:var(--cf-orange)">GLOBAL</div>
         </div>
     </div>
@@ -80,11 +80,11 @@
     <div class="checker-box">
         <div class="group-title" style="margin-left:0; color:var(--ag-red);">KIỂM TRA TRẠNG THÁI THỰC TẾ</div>
         <div class="check-item">
-            <span><span class="dot" id="dot-ag"></span>AdGuard DNS</span>
+            <span><span class="dot" id="dot-ag"></span>AdGuard Status</span>
             <small id="txt-ag" style="color:var(--ag-gray)">OFFLINE</small>
         </div>
         <div class="check-item">
-            <span><span class="dot" id="dot-cf"></span>Cloudflare DNS</span>
+            <span><span class="dot" id="dot-cf"></span>Cloudflare Status</span>
             <small id="txt-cf" style="color:var(--ag-gray)">OFFLINE</small>
         </div>
         <button onclick="runCheck()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">LÀM MỚI TRẠNG THÁI</button>
@@ -92,6 +92,7 @@
 
     <script>
         let isPowerOn = false;
+        const AG_ID = "cc1a659b-a5b6-4fb1-b829-4ee1969f1c99";
 
         function toggleSystem() {
             const loader = document.getElementById('loader');
@@ -130,7 +131,7 @@
                 document.getElementById('txt-ag').innerText = "ACTIVE";
                 document.getElementById('txt-ag').style.color = "var(--ag-green)";
             };
-            img.src = "https://1c5a8e.dns.nextdns.io/favicon.ico?" + Date.now();
+            img.src = `https://${AG_ID}.dns.nextdns.io/favicon.ico?` + Date.now();
 
             // Check Cloudflare
             try {
@@ -142,8 +143,7 @@
         }
 
         function resetStatus() {
-            document.getElementById('dot-ag').classList.remove('dot-on');
-            document.getElementById('dot-cf').classList.remove('dot-on');
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('dot-on'));
             document.getElementById('txt-ag').innerText = "OFFLINE";
             document.getElementById('txt-cf').innerText = "OFFLINE";
             document.getElementById('txt-ag').style.color = "var(--ag-gray)";
@@ -154,26 +154,27 @@
             let name = (type === 'AdGuard') ? "adguard-remove-ads.bat" : "cloudflare-fast.bat";
             let dns1 = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
             let dns2 = (type === 'AdGuard') ? "45.90.30.66" : "1.0.0.1";
-            
             const bat = `@echo off\ntitle ${type} Setup\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nnetsh interface ip set dnsservers name="%%j" source=static address=${dns1} validate=no\nnetsh interface ip add dnsservers name="%%j" address=${dns2} index=2 validate=no\n)\nipconfig /flushdns\necho [OK] Da kich hoat ${type}!\npause`;
-            
             const blob = new Blob([bat], {type: 'text/plain'});
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = name;
-            a.click();
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
         }
 
-        function installIOS(type) {
-            let url = (type === 'AdGuard') ? "https://dns.nextdns.io/1c5a8e" : "https://cloudflare-dns.com/dns-query";
+        function installProfile(type) {
+            let url = (type === 'AdGuard') ? `https://dns.nextdns.io/${AG_ID}` : "https://cloudflare-dns.com/dns-query";
             const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns.${type}</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>${type} Pro</string><key>PayloadIdentifier</key><string>com.setup.${type}</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
+            
             const blob = new Blob([profile], {type: 'application/x-apple-aspen-config'});
-            window.location.href = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `${type}_Config.mobileconfig`;
+            link.click();
+
+            alert("HƯỚNG DẪN CÀI ĐẶT IOS:\n1. Nhấn 'Cho phép' khi được hỏi tải về.\n2. Vào 'Cài đặt' -> 'Đã tải về hồ sơ'.\n3. Nhấn 'Cài đặt' ở góc trên bên phải.\n4. Vào 'Cài đặt chung' -> 'VPN & Thiết bị' -> 'DNS' và chọn Profile vừa cài.");
         }
 
         function copyAndroid(id) {
             navigator.clipboard.writeText(id);
-            alert("Đã copy ID: " + id + "\nNhấn OK để mở cài đặt Android.");
+            alert("Đã copy mã DNS: " + id + "\nNhấn OK để mở cài đặt Android.");
             window.location.href = "intent:#Intent;action=android.settings.PVT_DNS_SETTINGS;end";
         }
     </script>
