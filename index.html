@@ -3,37 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DNS Smart Engine Pro - Ultimate Edition</title>
+    <title>DNS Smart Engine Pro</title>
     <style>
         :root { --ag-green: #67bc91; --cf-orange: #f38020; --ag-dark: #0f0f0f; --ag-card: #1c1c1e; --ag-gray: #8e8e93; --ag-red: #ff453a; }
-        body { background: var(--ag-dark); color: white; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; transition: 0.5s; }
-        .header { width: 100%; padding: 20px 0; text-align: center; font-weight: 600; border-bottom: 0.5px solid #333; letter-spacing: 1px; }
+        body { background: var(--ag-dark); color: white; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 40px; }
         
-        /* Công tắc Khiên thông minh */
-        .shield-section { margin: 30px 0; position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; }
-        .shield-circle { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #333; transition: 0.5s; display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
-        .active-circle { border-color: var(--ag-green); box-shadow: 0 0 40px rgba(103, 188, 145, 0.4); }
-        .shield-icon { font-size: 60px; transition: 0.5s; filter: grayscale(1); opacity: 0.4; }
-        .active-icon { filter: grayscale(0); transform: scale(1.1); opacity: 1; }
-        .loader { position: absolute; width: 170px; height: 170px; border: 4px solid transparent; border-radius: 50%; display: none; animation: spin 1s linear infinite; z-index: 1; }
+        .header { margin-top: 20px; font-weight: bold; letter-spacing: 2px; color: var(--ag-gray); font-size: 14px; }
+
+        /* Shield Section */
+        .shield-section { margin: 30px 0; position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; }
+        .shield-circle { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #333; transition: 0.4s; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); }
+        .active-circle { border-color: var(--ag-green) !important; box-shadow: 0 0 50px rgba(103, 188, 145, 0.3); }
+        .shield-icon { font-size: 60px; transition: 0.5s; filter: grayscale(1); opacity: 0.3; }
+        .active-icon { filter: grayscale(0) !important; opacity: 1 !important; transform: scale(1.1); }
+        .loader { position: absolute; width: 165px; height: 165px; border: 4px solid transparent; border-top-color: var(--ag-green); border-radius: 50%; display: none; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        .status-label { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 20px; text-transform: uppercase; transition: 0.3s; }
+        .status-label { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 20px; text-transform: uppercase; }
         .status-on { color: var(--ag-green) !important; }
 
-        /* Danh mục Menu */
-        .menu-container { width: 92%; max-width: 420px; }
-        .group-title { font-size: 11px; color: var(--ag-gray); margin: 15px 5px 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        .menu-item { background: var(--ag-card); border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
+        /* Setup Menu */
+        #setup-menu { width: 92%; max-width: 420px; display: none; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .group-title { font-size: 11px; color: var(--ag-gray); margin: 25px 5px 10px; text-transform: uppercase; font-weight: bold; }
+        .menu-item { background: var(--ag-card); border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; border: 1px solid #2c2c2e; }
         .menu-item:active { transform: scale(0.96); }
         .icon-box { width: 40px; height: 40px; background: #2c2c2e; border-radius: 10px; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .badge { font-size: 10px; padding: 3px 10px; border-radius: 10px; font-weight: bold; background: #333; }
 
-        /* Checker (Dưới gạch đỏ) */
-        .checker-box { width: 92%; max-width: 420px; margin-top: 20px; padding: 20px 0; border-top: 2px solid var(--ag-red); }
-        .check-item { background: #151517; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ag-gray); margin-right: 10px; display: inline-block; transition: 0.3s; }
+        /* Checker Box */
+        .checker-box { width: 92%; max-width: 420px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #333; }
+        .check-item { background: #151517; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ag-gray); margin-right: 10px; display: inline-block; }
         .dot-on { background: var(--ag-green); box-shadow: 0 0 10px var(--ag-green); }
+
+        /* Modal - Sửa lỗi dính chữ & Căn chỉnh dấu cách */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); }
+        .modal-content { background: #1c1c1e; margin: 15% auto; padding: 25px; border-radius: 20px; width: 85%; max-width: 380px; border: 1px solid #333; }
+        .modal-title { font-size: 18px; font-weight: bold; color: var(--ag-green); margin-bottom: 25px; text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px; }
+        
+        .step-list { margin-bottom: 25px; }
+        .step-row { display: flex; align-items: flex-start; margin-bottom: 20px; } 
+        .step-circle { background: var(--ag-green); color: black; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; margin-right: 15px; margin-top: 2px; }
+        .step-text { font-size: 15px; line-height: 1.6; color: #ddd; flex: 1; }
+        
+        .btn-close { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--ag-green); color: black; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-link { color: var(--ag-green); text-decoration: underline; font-weight: bold; }
+        .refresh-notice { font-size: 10px; color: #444; text-align: center; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
@@ -42,43 +59,45 @@
 
     <div class="shield-section" onclick="toggleSystem()">
         <div class="loader" id="loader"></div>
-        <div class="shield-circle" id="circle"><div class="shield-icon" id="icon">🛡️</div></div>
+        <div class="shield-circle" id="circle">
+            <div class="shield-icon" id="icon">🛡️</div>
+        </div>
     </div>
 
     <div class="status-label" id="status">CHẾ ĐỘ CHỜ</div>
 
-    <div class="menu-container">
-        <div class="group-title">ADGUARD (CHẶN QUẢNG CÁO - CC1A65)</div>
+    <div id="setup-menu">
+        <div class="group-title">ADGUARD (CHẶN QUẢNG CÁO)</div>
         <div class="menu-item" onclick="downloadWindows('AdGuard')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🖥️</div><div><b>Windows Auto Fix</b><br><small style="color:var(--ag-gray)">adguard-remove-ads.bat</small></div></div>
-            <div class="badge" style="color:var(--ag-green)">BLOCK</div>
+            <div style="display:flex; align-items:center;"><div class="icon-box">🖥️</div><div><b>Windows Auto Fix</b></div></div>
+            <div class="badge" style="color:var(--ag-green)">BAT</div>
         </div>
-        <div class="menu-item" onclick="installProfile('AdGuard')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile</b><br><small style="color:var(--ag-gray)">Tải cấu hình .mobileconfig</small></div></div>
-            <div class="badge" style="color:var(--ag-green)">SECURE</div>
+        <div class="menu-item" onclick="handleInstall('ios', 'AdGuard')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile</b></div></div>
+            <div class="badge" style="color:var(--ag-green)">MOBILECONFIG</div>
         </div>
-        <div class="menu-item" onclick="copyAndroid('cc1a659b-a5b6-4fb1-b829-4ee1969f1c99.dns.nextdns.io')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android AdGuard</b><br><small style="color:var(--ag-gray)">Private DNS ID: cc1a65</small></div></div>
-            <div class="badge" style="color:var(--ag-green)">STABLE</div>
+        <div class="menu-item" onclick="handleInstall('android', 'AdGuard')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android OVPN</b></div></div>
+            <div class="badge" style="color:var(--ag-green)">OPENVPN</div>
         </div>
 
-        <div class="group-title">CLOUDFLARE (TỐC ĐỘ & GAME - 1.1.1.1)</div>
+        <div class="group-title">CLOUDFLARE (TỐC ĐỘ 1.1.1.1)</div>
         <div class="menu-item" onclick="downloadWindows('Cloudflare')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">⚡</div><div><b>Windows 1.1.1.1</b><br><small style="color:var(--ag-gray)">cloudflare-fast.bat</small></div></div>
+            <div style="display:flex; align-items:center;"><div class="icon-box">⚡</div><div><b>Windows 1.1.1.1</b></div></div>
             <div class="badge" style="color:var(--cf-orange)">FAST</div>
         </div>
-        <div class="menu-item" onclick="installProfile('Cloudflare')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile 1.1.1.1</b><br><small style="color:var(--ag-gray)">Tải cấu hình Cloudflare</small></div></div>
+        <div class="menu-item" onclick="handleInstall('ios', 'Cloudflare')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS 1.1.1.1</b></div></div>
             <div class="badge" style="color:var(--cf-orange)">SECURE</div>
         </div>
-        <div class="menu-item" onclick="copyAndroid('one.one.one.one')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android Settings</b><br><small style="color:var(--ag-gray)">Cài đặt DNS hệ thống</small></div></div>
-            <div class="badge" style="color:var(--cf-orange)">GLOBAL</div>
+        <div class="menu-item" onclick="handleInstall('android', 'Cloudflare')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android 1.1.1.1</b></div></div>
+            <div class="badge" style="color:var(--cf-orange)">OPENVPN</div>
         </div>
     </div>
 
     <div class="checker-box">
-        <div class="group-title" style="margin-left:0; color:var(--ag-red);">KIỂM TRA TRẠNG THÁI THỰC TẾ</div>
+        <div class="group-title" style="color:var(--ag-red);">KIỂM TRA THỰC TẾ</div>
         <div class="check-item">
             <span><span class="dot" id="dot-ag"></span>AdGuard Status</span>
             <small id="txt-ag" style="color:var(--ag-gray)">OFFLINE</small>
@@ -87,96 +106,146 @@
             <span><span class="dot" id="dot-cf"></span>Cloudflare Status</span>
             <small id="txt-cf" style="color:var(--ag-gray)">OFFLINE</small>
         </div>
-        <button onclick="runCheck()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">LÀM MỚI TRẠNG THÁI</button>
+        <button onclick="runCheck()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">LÀM MỚI QUÉT</button>
+        <div class="refresh-notice">Tự động quét sau mỗi 30 giây</div>
+    </div>
+
+    <div id="guideModal" class="modal">
+        <div class="modal-content">
+            <div id="modalTitle" class="modal-title">HƯỚNG DẪN</div>
+            <div id="modalSteps" class="step-list"></div>
+            <button class="btn-close" onclick="closeModal()">ĐÃ HIỂU</button>
+        </div>
     </div>
 
     <script>
         let isPowerOn = false;
         const AG_ID = "cc1a659b-a5b6-4fb1-b829-4ee1969f1c99";
 
+        window.onload = () => { 
+            runCheck(); 
+            if (localStorage.getItem('dnsPower') === 'true') {
+                applyOnUI();
+            }
+            setInterval(runCheck, 30000);
+        };
+
         function toggleSystem() {
             const loader = document.getElementById('loader');
-            const circle = document.getElementById('circle');
-            const icon = document.getElementById('icon');
-            const status = document.getElementById('status');
-
             if (!isPowerOn) {
                 loader.style.display = "block";
-                status.innerText = "ĐANG TỐI ƯU HÓA...";
+                document.getElementById('status').innerText = "ĐANG QUÉT THIẾT BỊ...";
                 setTimeout(() => {
                     loader.style.display = "none";
-                    circle.classList.add('active-circle');
-                    icon.classList.add('active-icon');
-                    status.innerText = "BẢO VỆ ĐÃ KÍCH HOẠT";
-                    status.classList.add('status-on');
-                    isPowerOn = true;
-                    runCheck();
-                }, 1000);
+                    applyOnUI();
+                    localStorage.setItem('dnsPower', 'true');
+                }, 800);
             } else {
-                circle.classList.remove('active-circle');
-                icon.classList.remove('active-icon');
-                status.innerText = "CHẾ ĐỘ CHỜ";
-                status.classList.remove('status-on');
-                isPowerOn = false;
-                resetStatus();
+                applyOffUI();
+                localStorage.setItem('dnsPower', 'false');
             }
         }
 
-        async function runCheck() {
-            if(!isPowerOn) return;
-            // Check AdGuard
-            const img = new Image();
-            img.onload = () => {
-                document.getElementById('dot-ag').classList.add('dot-on');
-                document.getElementById('txt-ag').innerText = "ACTIVE";
-                document.getElementById('txt-ag').style.color = "var(--ag-green)";
-            };
-            img.src = `https://${AG_ID}.dns.nextdns.io/favicon.ico?` + Date.now();
-
-            // Check Cloudflare
-            try {
-                await fetch('https://1.1.1.1/cdn-cgi/trace', { mode: 'no-cors' });
-                document.getElementById('dot-cf').classList.add('dot-on');
-                document.getElementById('txt-cf').innerText = "ONLINE";
-                document.getElementById('txt-cf').style.color = "var(--ag-green)";
-            } catch(e) {}
+        function applyOnUI() {
+            isPowerOn = true;
+            document.getElementById('circle').classList.add('active-circle');
+            document.getElementById('icon').classList.add('active-icon');
+            document.getElementById('status').innerText = "HỆ THỐNG ĐÃ MỞ";
+            document.getElementById('status').classList.add('status-on');
+            document.getElementById('setup-menu').style.display = 'block';
         }
 
-        function resetStatus() {
-            document.querySelectorAll('.dot').forEach(d => d.classList.remove('dot-on'));
-            document.getElementById('txt-ag').innerText = "OFFLINE";
-            document.getElementById('txt-cf').innerText = "OFFLINE";
-            document.getElementById('txt-ag').style.color = "var(--ag-gray)";
-            document.getElementById('txt-cf').style.color = "var(--ag-gray)";
+        function applyOffUI() {
+            isPowerOn = false;
+            document.getElementById('circle').classList.remove('active-circle');
+            document.getElementById('icon').classList.remove('active-icon');
+            document.getElementById('status').innerText = "CHẾ ĐỘ CHỜ";
+            document.getElementById('status').classList.remove('status-on');
+            document.getElementById('setup-menu').style.display = 'none';
+        }
+
+        async function runCheck() {
+            const img = new Image();
+            img.onload = () => updateUI('ag', true, 'ACTIVE');
+            img.onerror = () => updateUI('ag', false, 'OFFLINE');
+            img.src = `https://${AG_ID}.dns.nextdns.io/favicon.ico?` + Date.now();
+
+            try {
+                const res = await fetch('https://1.1.1.1/cdn-cgi/trace');
+                const text = await res.text();
+                updateUI('cf', text.includes('dns=on'), text.includes('dns=on') ? 'ONLINE' : 'OFFLINE');
+            } catch (e) { updateUI('cf', false, 'OFFLINE'); }
+        }
+
+        function updateUI(id, active, text) {
+            const dot = document.getElementById('dot-' + id);
+            const txt = document.getElementById('txt-' + id);
+            dot.className = active ? 'dot dot-on' : 'dot';
+            txt.innerText = text;
+            txt.style.color = active ? "var(--ag-green)" : "var(--ag-gray)";
+        }
+
+        function showModal(type, stepsArray) {
+            document.getElementById('modalTitle').innerText = "CÀI ĐẶT " + type.toUpperCase();
+            let html = "";
+            stepsArray.forEach((step, i) => {
+                html += `
+                    <div class="step-row">
+                        <div class="step-circle">${i + 1}</div>
+                        <div class="step-text">${step}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('modalSteps').innerHTML = html;
+            document.getElementById('guideModal').style.display = 'block';
+        }
+
+        function handleInstall(platform, type) {
+            if (platform === 'ios') {
+                let url = (type === 'AdGuard') ? `https://dns.nextdns.io/${AG_ID}` : "https://cloudflare-dns.com/dns-query";
+                const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns</string><key>PayloadUUID</key><string>1</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>${type} DNS</string><key>PayloadIdentifier</key><string>com.setup</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>2</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
+                downloadFile(profile, `${type}_iOS.mobileconfig`);
+                showModal(type, [
+                    "Nhấn <b>Cho phép</b> để tải hồ sơ cấu hình.",
+                    "Mở <b>Cài đặt</b> -> Chọn <b>Đã tải về hồ sơ</b>.",
+                    "Nhấn <b>Cài đặt</b> ở góc trên bên phải để hoàn tất."
+                ]);
+            } else if (platform === 'android') {
+                const host = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
+                const ovpn = `client\ndev tun\nproto udp\nremote ${host} 53\nresolv-retry infinite\nnobind\npersist-key\npersist-tun\nverb 3\ndhcp-option DNS ${host}`;
+                downloadFile(ovpn, `${type}_Android.ovpn`);
+                showModal(type, [
+                    `Tải ứng dụng: <a class="btn-link" href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn" target="_blank">OpenVPN Connect</a>`,
+                    "Mở App, chọn tab <b>FILE</b> và nhập file vừa tải.",
+                    "Nhấn <b>IMPORT</b> rồi gạt công tắc để kết nối."
+                ]);
+            }
         }
 
         function downloadWindows(type) {
-            let name = (type === 'AdGuard') ? "adguard-remove-ads.bat" : "cloudflare-fast.bat";
             let dns1 = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
             let dns2 = (type === 'AdGuard') ? "45.90.30.66" : "1.0.0.1";
-            const bat = `@echo off\ntitle ${type} Setup\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr /C:"Connected"') do (\nnetsh interface ip set dnsservers name="%%j" source=static address=${dns1} validate=no\nnetsh interface ip add dnsservers name="%%j" address=${dns2} index=2 validate=no\n)\nipconfig /flushdns\necho [OK] Da kich hoat ${type}!\npause`;
-            const blob = new Blob([bat], {type: 'text/plain'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click();
-        }
-
-        function installProfile(type) {
-            let url = (type === 'AdGuard') ? `https://dns.nextdns.io/${AG_ID}` : "https://cloudflare-dns.com/dns-query";
-            const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns.${type}</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>${type} Pro</string><key>PayloadIdentifier</key><string>com.setup.${type}</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>${Math.random()}</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
+            const bat = `@echo off\ntitle ${type} Setup\nnet session >nul 2>&1 || (echo Vui long chay bang quyen Admin! && pause && exit)\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr "Connected"') do (\nnetsh interface ip set dnsservers "%%j" static ${dns1} validate=no\nnetsh interface ip add dnsservers "%%j" ${dns2} index=2 validate=no\n)\nipconfig /flushdns\necho [OK] Da kich hoat ${type}!\npause`;
             
-            const blob = new Blob([profile], {type: 'application/x-apple-aspen-config'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `${type}_Config.mobileconfig`;
-            link.click();
-
-            alert("HƯỚNG DẪN CÀI ĐẶT IOS:\n1. Nhấn 'Cho phép' khi được hỏi tải về.\n2. Vào 'Cài đặt' -> 'Đã tải về hồ sơ'.\n3. Nhấn 'Cài đặt' ở góc trên bên phải.\n4. Vào 'Cài đặt chung' -> 'VPN & Thiết bị' -> 'DNS' và chọn Profile vừa cài.");
+            // Đã đổi tên file tải về thành _Windows.bat theo yêu cầu
+            downloadFile(bat, `${type}_Windows.bat`);
+            
+            showModal(type, [
+                "Mở file <b>" + type + "_Windows.bat</b> vừa tải về.",
+                "Chuột phải chọn <b>Run as Administrator</b> để cấp quyền.",
+                "Khi thấy thông báo [OK], nhấn phím bất kỳ để kết thúc."
+            ]);
         }
 
-        function copyAndroid(id) {
-            navigator.clipboard.writeText(id);
-            alert("Đã copy mã DNS: " + id + "\nNhấn OK để mở cài đặt Android.");
-            window.location.href = "intent:#Intent;action=android.settings.PVT_DNS_SETTINGS;end";
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = filename;
+            a.click();
         }
+
+        function closeModal() { document.getElementById('guideModal').style.display = 'none'; }
     </script>
 </body>
 </html>
