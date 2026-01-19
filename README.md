@@ -39,4 +39,8 @@ Sau khi cài đặt, hãy kéo xuống phần **KIỂM TRA TRẠNG THÁI** ở c
 
 ## 📜 Giấy phép
 Dự án này được phát hành dưới giấy phép [MIT License](LICENSE).
-link is here https://maiyeuem24092012.github.io/adguard-dns-pro/
+
+---
+###
+Link Chạy app web
+link is here ➡️➡️ https://maiyeuem24092012.github.io/adguard-dns-pro/
