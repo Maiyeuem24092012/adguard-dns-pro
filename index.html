@@ -6,25 +6,72 @@
     <title>DNS Smart Engine Pro</title>
     <style>
         :root { --ag-green: #67bc91; --cf-orange: #f38020; --ag-dark: #0f0f0f; --ag-card: #1c1c1e; --ag-gray: #8e8e93; --ag-red: #ff453a; }
-        body { background: var(--ag-dark); color: white; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 40px; }
+        body { background: var(--ag-dark); color: white; font-family: -apple-system, sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding-bottom: 40px; overflow-x: hidden; }
         
         .header { margin-top: 20px; font-weight: bold; letter-spacing: 2px; color: var(--ag-gray); font-size: 14px; }
 
-        /* Shield Section */
-        .shield-section { margin: 30px 0; position: relative; width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; }
-        .shield-circle { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #333; transition: 0.4s; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); }
-        .active-circle { border-color: var(--ag-green) !important; box-shadow: 0 0 50px rgba(103, 188, 145, 0.3); }
+        /* KHU VỰC KHIÊN BIỂU TƯỢNG */
+        .shield-section { margin: 40px 0; position: relative; width: 200px; height: 200px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; }
+        
+        /* Hiệu ứng sóng lan tỏa (Sóng xanh) */
+        .ripple { position: absolute; width: 140px; height: 140px; border: 2px solid var(--ag-green); border-radius: 50%; opacity: 0; display: none; }
+        .scanning .ripple { display: block; animation: ripple-out 1.5s linear infinite; }
+        .scanning .ripple:nth-child(2) { animation-delay: 0.5s; }
+        .scanning .ripple:nth-child(3) { animation-delay: 1s; }
+
+        /* Loader đa tầng */
+        .loader-multi { 
+            position: absolute; width: 185px; height: 185px; border-radius: 50%; 
+            border: 2px solid transparent; border-top: 3px solid var(--ag-green); border-bottom: 3px solid var(--ag-green);
+            display: none; animation: spin-cool 1s linear infinite; filter: drop-shadow(0 0 10px var(--ag-green));
+        }
+        .loader-multi::before {
+            content: ""; position: absolute; top: 10px; left: 10px; right: 10px; bottom: 10px;
+            border-radius: 50%; border: 2px solid transparent; border-left: 3px solid #fff; border-right: 3px solid #fff;
+            opacity: 0.6; animation: spin-reverse 1.5s linear infinite;
+        }
+        .loader-multi::after {
+            content: ""; position: absolute; top: 25px; left: 25px; right: 25px; bottom: 25px;
+            border-radius: 50%; border: 2px dashed var(--ag-green); opacity: 0.4; animation: spin-cool 3s linear infinite;
+        }
+        
+        /* Biến thể Loader màu đỏ khi tắt */
+        .loader-off { border-top-color: var(--ag-red) !important; border-bottom-color: var(--ag-red) !important; filter: drop-shadow(0 0 10px var(--ag-red)) !important; }
+        .loader-off::after { border-color: var(--ag-red) !important; }
+
+        .shield-circle { width: 140px; height: 140px; border-radius: 50%; border: 4px solid #333; transition: 0.4s; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.02); z-index: 2; }
+        .active-circle { border-color: var(--ag-green) !important; box-shadow: 0 0 30px var(--ag-green), inset 0 0 20px var(--ag-green); background: rgba(103, 188, 145, 0.1) !important; }
         .shield-icon { font-size: 60px; transition: 0.5s; filter: grayscale(1); opacity: 0.3; }
         .active-icon { filter: grayscale(0) !important; opacity: 1 !important; transform: scale(1.1); }
-        .loader { position: absolute; width: 165px; height: 165px; border: 4px solid transparent; border-top-color: var(--ag-green); border-radius: 50%; display: none; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .status-label { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 20px; text-transform: uppercase; }
-        .status-on { color: var(--ag-green) !important; }
+        @keyframes spin-cool { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spin-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+        @keyframes ripple-out { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }
 
-        /* Setup Menu */
-        #setup-menu { width: 92%; max-width: 420px; display: none; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* NHÃN TRẠNG THÁI */
+        .status-label { font-size: 18px; font-weight: bold; color: #555; margin-bottom: 5px; text-transform: uppercase; transition: 0.3s; }
+        .status-on { color: var(--ag-green) !important; text-shadow: 0 0 10px rgba(103, 188, 145, 0.5); }
+        .status-loading-off { color: var(--ag-red) !important; }
+        
+        #device-info { font-size: 12px; color: var(--ag-gray); margin-bottom: 20px; background: rgba(255,255,255,0.05); padding: 5px 15px; border-radius: 20px; border: 1px solid #333; display: none; }
+
+        /* HIỆU ỨNG TRƯỢT MENU (SLIDE UP/DOWN) */
+        #setup-menu { 
+            width: 92%; max-width: 420px; 
+            overflow: hidden; 
+            max-height: 0; /* Đóng */
+            opacity: 0; 
+            transform: translateY(20px) scale(0.98);
+            transition: max-height 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.4s ease, 
+                        transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .menu-open { 
+            max-height: 1200px !important; /* Mở */
+            opacity: 1 !important; 
+            transform: translateY(0) scale(1) !important;
+            margin-bottom: 20px;
+        }
 
         .group-title { font-size: 11px; color: var(--ag-gray); margin: 25px 5px 10px; text-transform: uppercase; font-weight: bold; }
         .menu-item { background: var(--ag-card); border-radius: 15px; padding: 15px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; border: 1px solid #2c2c2e; }
@@ -32,39 +79,38 @@
         .icon-box { width: 40px; height: 40px; background: #2c2c2e; border-radius: 10px; margin-right: 15px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         .badge { font-size: 10px; padding: 3px 10px; border-radius: 10px; font-weight: bold; background: #333; }
 
-        /* Checker Box */
+        /* CHECKER BOX */
         .checker-box { width: 92%; max-width: 420px; margin-top: 20px; padding-top: 20px; border-top: 1px solid #333; }
         .check-item { background: #151517; border-radius: 12px; padding: 15px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; }
         .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ag-gray); margin-right: 10px; display: inline-block; }
         .dot-on { background: var(--ag-green); box-shadow: 0 0 10px var(--ag-green); }
 
-        /* Modal - Sửa lỗi dính chữ & Căn chỉnh dấu cách */
+        /* MODAL */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); backdrop-filter: blur(8px); }
-        .modal-content { background: #1c1c1e; margin: 15% auto; padding: 25px; border-radius: 20px; width: 85%; max-width: 380px; border: 1px solid #333; }
+        .modal-content { background: #1c1c1e; margin: 10% auto; padding: 25px; border-radius: 20px; width: 85%; max-width: 380px; border: 1px solid #333; max-height: 85vh; overflow-y: auto; }
         .modal-title { font-size: 18px; font-weight: bold; color: var(--ag-green); margin-bottom: 25px; text-align: center; border-bottom: 1px solid #333; padding-bottom: 15px; }
-        
-        .step-list { margin-bottom: 25px; }
         .step-row { display: flex; align-items: flex-start; margin-bottom: 20px; } 
         .step-circle { background: var(--ag-green); color: black; border-radius: 50%; min-width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: bold; margin-right: 15px; margin-top: 2px; }
         .step-text { font-size: 15px; line-height: 1.6; color: #ddd; flex: 1; }
-        
-        .btn-close { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--ag-green); color: black; font-weight: bold; font-size: 16px; cursor: pointer; }
+        .btn-close { width: 100%; padding: 15px; border-radius: 12px; border: none; background: var(--ag-green); color: black; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
         .btn-link { color: var(--ag-green); text-decoration: underline; font-weight: bold; }
-        .refresh-notice { font-size: 10px; color: #444; text-align: center; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .copy-box { background: #000; padding: 12px; border-radius: 8px; color: var(--ag-green); font-family: monospace; margin: 10px 0; border: 1px dashed var(--ag-green); word-break: break-all; text-align: center; cursor: pointer; }
+        .choice-container { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-choice { flex: 1; padding: 15px; border-radius: 12px; border: 1px solid #444; background: #2c2c2e; color: white; cursor: pointer; font-weight: bold; font-size: 13px; }
     </style>
 </head>
 <body>
 
     <div class="header">DNS SMART ENGINE PRO</div>
 
-    <div class="shield-section" onclick="toggleSystem()">
-        <div class="loader" id="loader"></div>
-        <div class="shield-circle" id="circle">
-            <div class="shield-icon" id="icon">🛡️</div>
-        </div>
+    <div class="shield-section" id="shield-container" onclick="toggleSystem()">
+        <div class="ripple"></div><div class="ripple"></div><div class="ripple"></div>
+        <div class="loader-multi" id="loader"></div>
+        <div class="shield-circle" id="circle"><div class="shield-icon" id="icon">🛡️</div></div>
     </div>
 
     <div class="status-label" id="status">CHẾ ĐỘ CHỜ</div>
+    <div id="device-info">Đang nhận diện thiết bị...</div>
 
     <div id="setup-menu">
         <div class="group-title">ADGUARD (CHẶN QUẢNG CÁO)</div>
@@ -76,9 +122,9 @@
             <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS Profile</b></div></div>
             <div class="badge" style="color:var(--ag-green)">MOBILECONFIG</div>
         </div>
-        <div class="menu-item" onclick="handleInstall('android', 'AdGuard')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android OVPN</b></div></div>
-            <div class="badge" style="color:var(--ag-green)">OPENVPN</div>
+        <div class="menu-item" onclick="askAndroid('AdGuard')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android Setup</b></div></div>
+            <div class="badge" style="color:var(--ag-green)">AUTO</div>
         </div>
 
         <div class="group-title">CLOUDFLARE (TỐC ĐỘ 1.1.1.1)</div>
@@ -90,9 +136,9 @@
             <div style="display:flex; align-items:center;"><div class="icon-box">🍎</div><div><b>iOS 1.1.1.1</b></div></div>
             <div class="badge" style="color:var(--cf-orange)">SECURE</div>
         </div>
-        <div class="menu-item" onclick="handleInstall('android', 'Cloudflare')">
-            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android 1.1.1.1</b></div></div>
-            <div class="badge" style="color:var(--cf-orange)">OPENVPN</div>
+        <div class="menu-item" onclick="askAndroid('Cloudflare')">
+            <div style="display:flex; align-items:center;"><div class="icon-box">🤖</div><div><b>Android Setup</b></div></div>
+            <div class="badge" style="color:var(--cf-orange)">AUTO</div>
         </div>
     </div>
 
@@ -107,42 +153,77 @@
             <small id="txt-cf" style="color:var(--ag-gray)">OFFLINE</small>
         </div>
         <button onclick="runCheck()" style="width:100%; padding:12px; border-radius:10px; border:none; background:#222; color:white; font-weight:bold; cursor:pointer; margin-top:10px;">LÀM MỚI QUÉT</button>
-        <div class="refresh-notice">Tự động quét sau mỗi 30 giây</div>
     </div>
 
     <div id="guideModal" class="modal">
         <div class="modal-content">
             <div id="modalTitle" class="modal-title">HƯỚNG DẪN</div>
             <div id="modalSteps" class="step-list"></div>
-            <button class="btn-close" onclick="closeModal()">ĐÃ HIỂU</button>
+            <button class="btn-close" id="btn-modal-main-close">ĐÃ HIỂU</button>
+        </div>
+    </div>
+
+    <div id="androidChoiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-title">CẤU HÌNH ANDROID</div>
+            <div class="choice-container">
+                <button class="btn-choice" id="btn-old-android">Android 8 trở xuống</button>
+                <button class="btn-choice" id="btn-new-android" style="border-color: var(--ag-green);">Android 9 trở lên</button>
+            </div>
+            <button class="btn-close" onclick="closeChoiceModal()" style="background:#333; color:white;">QUAY LẠI</button>
         </div>
     </div>
 
     <script>
         let isPowerOn = false;
         const AG_ID = "cc1a659b-a5b6-4fb1-b829-4ee1969f1c99";
+        let tempType = "";
 
         window.onload = () => { 
             runCheck(); 
-            if (localStorage.getItem('dnsPower') === 'true') {
-                applyOnUI();
-            }
+            if (localStorage.getItem('dnsPower') === 'true') applyOnUI();
             setInterval(runCheck, 30000);
         };
 
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            let name = "Android Device"; let version = "Android";
+            if (ua.indexOf("Windows NT 10.0") !== -1) { name = "PC / LAPTOP"; version = "Windows 10/11"; }
+            else if (/iPhone|iPad|iPod/.test(ua)) { name = "iPhone/iPad"; version = "iOS"; }
+            return { name, version };
+        }
+
         function toggleSystem() {
             const loader = document.getElementById('loader');
+            const container = document.getElementById('shield-container');
+            const statusTxt = document.getElementById('status');
+
             if (!isPowerOn) {
+                container.classList.add('scanning');
+                loader.classList.remove('loader-off');
                 loader.style.display = "block";
-                document.getElementById('status').innerText = "ĐANG QUÉT THIẾT BỊ...";
+                statusTxt.innerText = "ĐANG QUÉT ĐA TẦNG...";
+                
                 setTimeout(() => {
+                    container.classList.remove('scanning');
                     loader.style.display = "none";
                     applyOnUI();
                     localStorage.setItem('dnsPower', 'true');
-                }, 800);
+                }, 2000); 
             } else {
+                loader.classList.add('loader-off');
+                loader.style.display = "block";
+                statusTxt.innerText = "ĐANG NGẮT KẾT NỐI...";
+                statusTxt.classList.add('status-loading-off');
+
                 applyOffUI();
                 localStorage.setItem('dnsPower', 'false');
+
+                setTimeout(() => {
+                    loader.style.display = "none";
+                    statusTxt.innerText = "CHẾ ĐỘ CHỜ";
+                    statusTxt.classList.remove('status-loading-off');
+                }, 1500);
             }
         }
 
@@ -152,16 +233,64 @@
             document.getElementById('icon').classList.add('active-icon');
             document.getElementById('status').innerText = "HỆ THỐNG ĐÃ MỞ";
             document.getElementById('status').classList.add('status-on');
-            document.getElementById('setup-menu').style.display = 'block';
+            document.getElementById('setup-menu').classList.add('menu-open');
+            const info = detectDevice();
+            document.getElementById('device-info').style.display = "block";
+            document.getElementById('device-info').innerHTML = `📡 <b>${info.name}</b> | ${info.version}`;
         }
 
         function applyOffUI() {
             isPowerOn = false;
             document.getElementById('circle').classList.remove('active-circle');
             document.getElementById('icon').classList.remove('active-icon');
-            document.getElementById('status').innerText = "CHẾ ĐỘ CHỜ";
             document.getElementById('status').classList.remove('status-on');
-            document.getElementById('setup-menu').style.display = 'none';
+            document.getElementById('setup-menu').classList.remove('menu-open');
+            document.getElementById('device-info').style.display = "none";
+        }
+
+        function askAndroid(type) {
+            tempType = type;
+            document.getElementById('androidChoiceModal').style.display = 'block';
+            document.getElementById('btn-old-android').onclick = () => { closeChoiceModal(); handleOpenVPN(type); };
+            document.getElementById('btn-new-android').onclick = () => { closeChoiceModal(); handlePrivateDNS(type); };
+        }
+
+        function handleOpenVPN(type) {
+            const host = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
+            const ovpn = `client\ndev tun\nproto udp\nremote ${host} 53\nresolv-retry infinite\nnobind\npersist-key\npersist-tun\nsetenv CLIENT_CERT 0\nremote-cert-tls server\nverb 3\ndhcp-option DNS ${host}`;
+            downloadFile(ovpn, `${type}_Android_Fixed.ovpn`, 'text/plain');
+            showModal(type, [
+                `Tải app <a class="btn-link" href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn" target="_blank">OpenVPN Connect</a>.`,
+                "Import file vừa tải. Nhấn <b>CONTINUE</b>.",
+                "File này đã được cấu hình đặc biệt để <b>BỎ QUA LỖI CA</b>."
+            ], false);
+        }
+
+        function handlePrivateDNS(type) {
+            const dnsCode = (type === 'AdGuard') ? `${AG_ID}.dns.nextdns.io` : "one.one.one.one";
+            navigator.clipboard.writeText(dnsCode);
+            showModal(type, [
+                `<b style="color:var(--ag-green)">✅ ĐÃ TỰ ĐỘNG COPY MÃ</b>`,
+                `Mã DNS: <div class="copy-box">${dnsCode}</div>`,
+                "Dán mã vào mục <b>DNS cá nhân</b> trong cài đặt."
+            ], 'android');
+        }
+
+        function downloadWindows(type) {
+            let dns1 = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
+            let dns2 = (type === 'AdGuard') ? "45.90.30.66" : "1.0.0.1";
+            const bat = `@echo off\ntitle ${type} Setup\nnet session >nul 2>&1 || (echo Chay Admin! && pause && exit)\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr "Connected"') do (\nnetsh interface ip set dnsservers "%%j" static ${dns1} validate=no\nnetsh interface ip add dnsservers "%%j" ${dns2} index=2 validate=no\n)\nipconfig /flushdns\npause`;
+            downloadFile(bat, `${type}_Windows.bat`, 'text/plain');
+            showModal(type, ["Chạy file bằng quyền Admin.", "Hiện [OK] là xong."], false);
+        }
+
+        function handleInstall(platform, type) {
+            if (platform === 'ios') {
+                let url = (type === 'AdGuard') ? `https://dns.nextdns.io/${AG_ID}` : "https://cloudflare-dns.com/dns-query";
+                const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string></dict></array><key>PayloadDisplayName</key><string>${type} DNS</string><key>PayloadUUID</key><string>1</string><key>PayloadType</key><string>Configuration</string><key>PayloadVersion</key><integer>1</integer><key>PayloadIdentifier</key><string>com.dns</string></dict></plist>`;
+                downloadFile(profile, `${type}_iOS.mobileconfig`, 'application/x-apple-aspen-config');
+                showModal(type, ["Tải cấu hình xong, vào <b>Cài đặt</b> để xác nhận."], 'ios');
+            }
         }
 
         async function runCheck() {
@@ -169,7 +298,6 @@
             img.onload = () => updateUI('ag', true, 'ACTIVE');
             img.onerror = () => updateUI('ag', false, 'OFFLINE');
             img.src = `https://${AG_ID}.dns.nextdns.io/favicon.ico?` + Date.now();
-
             try {
                 const res = await fetch('https://1.1.1.1/cdn-cgi/trace');
                 const text = await res.text();
@@ -180,72 +308,42 @@
         function updateUI(id, active, text) {
             const dot = document.getElementById('dot-' + id);
             const txt = document.getElementById('txt-' + id);
-            dot.className = active ? 'dot dot-on' : 'dot';
-            txt.innerText = text;
-            txt.style.color = active ? "var(--ag-green)" : "var(--ag-gray)";
-        }
-
-        function showModal(type, stepsArray) {
-            document.getElementById('modalTitle').innerText = "CÀI ĐẶT " + type.toUpperCase();
-            let html = "";
-            stepsArray.forEach((step, i) => {
-                html += `
-                    <div class="step-row">
-                        <div class="step-circle">${i + 1}</div>
-                        <div class="step-text">${step}</div>
-                    </div>
-                `;
-            });
-            document.getElementById('modalSteps').innerHTML = html;
-            document.getElementById('guideModal').style.display = 'block';
-        }
-
-        function handleInstall(platform, type) {
-            if (platform === 'ios') {
-                let url = (type === 'AdGuard') ? `https://dns.nextdns.io/${AG_ID}` : "https://cloudflare-dns.com/dns-query";
-                const profile = `<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>PayloadContent</key><array><dict><key>DNSSettings</key><dict><key>DNSProtocol</key><string>HTTPS</string><key>ServerURL</key><string>${url}</string></dict><key>PayloadType</key><string>com.apple.dnsSettings.managed</string><key>PayloadIdentifier</key><string>com.dns</string><key>PayloadUUID</key><string>1</string><key>PayloadVersion</key><integer>1</integer></dict></array><key>PayloadDisplayName</key><string>${type} DNS</string><key>PayloadIdentifier</key><string>com.setup</string><key>PayloadType</key><string>Configuration</string><key>PayloadUUID</key><string>2</string><key>PayloadVersion</key><integer>1</integer></dict></plist>`;
-                downloadFile(profile, `${type}_iOS.mobileconfig`);
-                showModal(type, [
-                    "Nhấn <b>Cho phép</b> để tải hồ sơ cấu hình.",
-                    "Mở <b>Cài đặt</b> -> Chọn <b>Đã tải về hồ sơ</b>.",
-                    "Nhấn <b>Cài đặt</b> ở góc trên bên phải để hoàn tất."
-                ]);
-            } else if (platform === 'android') {
-                const host = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
-                const ovpn = `client\ndev tun\nproto udp\nremote ${host} 53\nresolv-retry infinite\nnobind\npersist-key\npersist-tun\nverb 3\ndhcp-option DNS ${host}`;
-                downloadFile(ovpn, `${type}_Android.ovpn`);
-                showModal(type, [
-                    `Tải ứng dụng: <a class="btn-link" href="https://play.google.com/store/apps/details?id=net.openvpn.openvpn" target="_blank">OpenVPN Connect</a>`,
-                    "Mở App, chọn tab <b>FILE</b> và nhập file vừa tải.",
-                    "Nhấn <b>IMPORT</b> rồi gạt công tắc để kết nối."
-                ]);
+            if(dot && txt) {
+                dot.className = active ? 'dot dot-on' : 'dot';
+                txt.innerText = text; txt.style.color = active ? "var(--ag-green)" : "var(--ag-gray)";
             }
         }
 
-        function downloadWindows(type) {
-            let dns1 = (type === 'AdGuard') ? "45.90.28.66" : "1.1.1.1";
-            let dns2 = (type === 'AdGuard') ? "45.90.30.66" : "1.0.0.1";
-            const bat = `@echo off\ntitle ${type} Setup\nnet session >nul 2>&1 || (echo Vui long chay bang quyen Admin! && pause && exit)\nfor /f "tokens=3*" %%i in ('netsh interface show interface ^| findstr "Connected"') do (\nnetsh interface ip set dnsservers "%%j" static ${dns1} validate=no\nnetsh interface ip add dnsservers "%%j" ${dns2} index=2 validate=no\n)\nipconfig /flushdns\necho [OK] Da kich hoat ${type}!\npause`;
-            
-            // Đã đổi tên file tải về thành _Windows.bat theo yêu cầu
-            downloadFile(bat, `${type}_Windows.bat`);
-            
-            showModal(type, [
-                "Mở file <b>" + type + "_Windows.bat</b> vừa tải về.",
-                "Chuột phải chọn <b>Run as Administrator</b> để cấp quyền.",
-                "Khi thấy thông báo [OK], nhấn phím bất kỳ để kết thúc."
-            ]);
+        function showModal(type, steps, autoRedirect) {
+            document.getElementById('modalTitle').innerText = "CÀI ĐẶT " + type.toUpperCase();
+            let html = "";
+            steps.forEach((s, i) => html += `<div class="step-row"><div class="step-circle">${i+1}</div><div class="step-text">${s}</div></div>`);
+            document.getElementById('modalSteps').innerHTML = html;
+            const closeBtn = document.getElementById('btn-modal-main-close');
+            closeBtn.onclick = () => {
+                closeModal();
+                if (autoRedirect === 'ios') window.location.href = "prefs:root=General&path=ManagedConfigurationList";
+                else if (autoRedirect === 'android') {
+                    const intents = ["intent:#Intent;action=android.settings.DNS_SETTINGS;end", "intent:#Intent;action=android.settings.SETTINGS;end"];
+                    let i = 0;
+                    function tryRedirect() {
+                        if (i < intents.length) { window.location.href = intents[i]; i++; setTimeout(tryRedirect, 300); }
+                    }
+                    tryRedirect();
+                }
+            };
+            document.getElementById('guideModal').style.display = 'block';
         }
 
-        function downloadFile(content, filename) {
-            const blob = new Blob([content], { type: 'text/plain' });
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type: type });
             const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = filename;
-            a.click();
+            a.href = URL.createObjectURL(blob); a.download = filename; a.click();
         }
 
         function closeModal() { document.getElementById('guideModal').style.display = 'none'; }
+        function closeChoiceModal() { document.getElementById('androidChoiceModal').style.display = 'none'; }
     </script>
 </body>
 </html>
+
