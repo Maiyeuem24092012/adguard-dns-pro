@@ -24,7 +24,7 @@ Bộ công cụ web giúp cấu hình nhanh DNS để chặn quảng cáo (AdGua
 - Vào **Cài đặt** > **Đã tải về hồ sơ** > Nhấn **Cài đặt** ở góc trên cùng bên phải.
 
 ### 3. Android
-- Nhấn vào nút **Android Settings**. Hệ thống sẽ tự động copy ID DNS và mở cài đặt DNS riêng.
+- Nhấn vào nút **Android Settings**. Hệ thống sẽ tự động copy ID DNS.
 - Chọn "Tên chủ lưu trữ nhà cung cấp DNS tư nhân".
 - Dán mã đã copy và nhấn **Lưu**.
 
